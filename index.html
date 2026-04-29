@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Annie’s Sweets & Treats</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0f0f14;
+color:white;
+}
+
+nav{
+position:fixed;top:0;width:100%;
+display:flex;justify-content:space-between;
+padding:12px 20px;
+background:rgba(20,20,30,0.8);
+backdrop-filter:blur(10px);
+}
+
+button{
+cursor:pointer;
+}
+
+.hero{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+background:url('https://images.unsplash.com/photo-1509042239860-f550ce710b93') center/cover;
+}
+
+section{display:none;padding:100px 20px;}
+.active{display:block;}
+
+.chat{
+position:fixed;bottom:20px;right:20px;
+background:#ff3d7f;
+padding:12px;
+border-radius:50px;
+cursor:pointer;
+}
+
+.chatbox{
+position:fixed;bottom:80px;right:20px;
+width:300px;height:350px;
+background:white;color:black;
+display:none;flex-direction:column;
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+<div><b>Annie’s</b></div>
+<div>
+<button onclick="show('home')">Home</button>
+<button onclick="show('menu')">Menu</button>
+<button onclick="show('cart')">Cart</button>
+</div>
+</nav>
+
+<section id="home" class="active hero">
+<h1>Luxury Coffee & Desserts</h1>
+<button onclick="show('menu')">Order Now</button>
+</section>
+
+<section id="menu">
+<h2>Menu</h2>
+<p>Full menu will appear here (already built earlier)</p>
+</section>
+
+<section id="cart">
+<h2>Cart</h2>
+<div id="cart"></div>
+</section>
+
+<div class="chat" onclick="toggleChat()">💬 AI</div>
+
+<div class="chatbox" id="chatbox">
+<div style="padding:10px;background:#7c4dff;color:white;">AI Assistant</div>
+<div id="messages" style="flex:1;padding:10px;overflow:auto;"></div>
+<input id="input" placeholder="Ask..." style="padding:10px;border:none;">
+<button onclick="send()">Send</button>
+</div>
+
+<script>
+function show(id){
+document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+function toggleChat(){
+let box=document.getElementById("chatbox");
+box.style.display = box.style.display==="flex"?"none":"flex";
+box.style.flexDirection="column";
+}
+
+/* REAL AI CALL */
+async function send(){
+let input=document.getElementById("input");
+let msg=input.value;
+if(!msg)return;
+
+let box=document.getElementById("messages");
+box.innerHTML+="<div><b>You:</b> "+msg+"</div>";
+
+input.value="";
+
+let res = await fetch("/api/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:msg})
+});
+
+let data = await res.json();
+
+box.innerHTML+="<div><b>AI:</b> "+data.reply+"</div>";
+}
+</script>
+
+</body>
+</html>
